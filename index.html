@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>WebAR: 3D-модели компьютерных компонентов</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    .info-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      font-family: Arial;
+      display: none;
+      z-index: 100;
+    }
+    .close-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      float: right;
+    }
+  </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene 
+    embedded 
+    arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+
+    <!-- ===== 3D-МОДЕЛИ КОМПОНЕНТОВ ===== -->
+    
+    <!-- Процессор (CPU) -->
+    <a-marker type="barcode" value="0">
+      <a-entity 
+        gltf-model="https://cdn.glitch.global/your-path/cpu.gltf"
+        scale="0.05 0.05 0.05"
+        position="0 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"
+      ></a-entity>
+    </a-marker>
+
+    <!-- Видеокарта (GPU) -->
+    <a-marker type="barcode" value="1">
+      <a-entity 
+        gltf-model="https://cdn.glitch.global/your-path/gpu.gltf"
+        scale="0.1 0.1 0.1"
+        position="0 0.1 0"
+      ></a-entity>
+    </a-marker>
+
+    <!-- Материнская плата -->
+    <a-marker type="barcode" value="2">
+      <a-entity 
+        gltf-model="https://cdn.glitch.global/your-path/motherboard.gltf"
+        scale="0.02 0.02 0.02"
+        position="0 0 0"
+      ></a-entity>
+    </a-marker>
+
+    <!-- Оперативная память (RAM) -->
+    <a-marker type="barcode" value="3">
+      <a-entity 
+        gltf-model="https://cdn.glitch.global/your-path/ram.gltf"
+        scale="0.2 0.2 0.2"
+        position="0 0.05 0"
+      ></a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Панель информации -->
+  <div id="info-panel" class="info-panel">
+    <button class="close-btn" onclick="hideInfo()">×</button>
+    <h3 id="part-name">Название компонента</h3>
+    <p id="part-desc">Описание появится здесь...</p>
+  </div>
+
+  <script>
+    // Данные о компонентах
+    const partsData = {
+      0: {
+        name: "Процессор (CPU)",
+        desc: "Центральный процессор. Основные характеристики: тактовая частота, количество ядер, кэш-память."
+      },
+      1: {
+        name: "Видеокарта (GPU)",
+        desc: "Графический процессор. Отвечает за рендеринг изображения. Имеет собственную видеопамять."
+      },
+      2: {
+        name: "Материнская плата",
+        desc: "Основная плата компьютера. Содержит слоты для CPU, RAM, GPU и других компонентов."
+      },
+      3: {
+        name: "Оперативная память (RAM)",
+        desc: "Временное хранилище данных. Характеристики: объем (ГБ), частота, тайминги."
+      }
+    };
+
+    // Обработка маркеров
+    document.querySelector('a-scene').addEventListener('markerFound', (e) => {
+      const markerValue = e.target.getAttribute('value');
+      const infoPanel = document.getElementById('info-panel');
+      
+      document.getElementById('part-name').textContent = partsData[markerValue].name;
+      document.getElementById('part-desc').textContent = partsData[markerValue].desc;
+      
+      infoPanel.style.display = 'block';
+    });
+
+    document.querySelector('a-scene').addEventListener('markerLost', () => {
+      document.getElementById('info-panel').style.display = 'none';
+    });
+
+    function hideInfo() {
+      document.getElementById('info-panel').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
